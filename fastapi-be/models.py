@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from sqlmodel import SQLModel
 
-class Room(BaseModel):
+class Room(SQLModel):
     name: str

@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  rooms:
+    image: rooms:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/dcentric-test-DB
+    depends_on:
+      - db
+    networks:
+      - roomnet
+
+  db:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: dcentric-test-DB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - roomnet
+
+networks:
+  roomnet:
+
+volumes:
+  postgres_data:

@@ -1,17 +1,31 @@
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+from sqlalchemy_utils import database_exists, create_database
+from sqlmodel import SQLModel, Field, create_engine, Session
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost/dcentric-test-DB"
+def create_database_if_not_exists(url):
+    if not database_exists(url):
+        create_database(url)
+    print("Database exists or was created!")
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-Base = declarative_base()
+# Define the database URL
+POSTGRES_DATABASE_URL = "postgresql://postgres:postgres@db/dcentric-test-DB"
 
-class RoomDB(Base):
-    __tablename__ = "rooms"
+# Check and create database if necessary
+create_database_if_not_exists(POSTGRES_DATABASE_URL)
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
+# Create the engine
+engine = create_engine(POSTGRES_DATABASE_URL)
 
-Base.metadata.create_all(bind=engine)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Define the RoomDB model using SQLModel
+class RoomDB(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True, index=True)
+    name: str
+
+# Create tables (if they do not already exist)
+SQLModel.metadata.create_all(bind=engine)
+
+# Function to create a new session
+def get_session():
+    with Session(engine) as session:
+        yield session
+
