@@ -37,7 +37,7 @@ if __name__ == "__main__":
     roomid = str(rooms[0]["name"])
 
 # Send a Chat Message to this Room
-    uri = "ws://localhost:8000/messages" + "/" + roomid
+    uri = f"ws://localhost:8000/messages/{roomid}"
     print(uri)
     asyncio.run(send_messages(uri))
 
