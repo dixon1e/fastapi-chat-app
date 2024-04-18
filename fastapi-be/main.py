@@ -1,9 +1,11 @@
 from fastapi import FastAPI, WebSocket, Depends, HTTPException
+from starlette.websockets import WebSocketDisconnect 
 from sqlmodel import Session
 from database import get_session, RoomDB
 from models import Room  # Ensure models.Room is properly defined to match RoomDB fields
 from typing import Dict, List
 import crud
+import json
 
 app = FastAPI()
 
@@ -30,6 +32,8 @@ async def websocket_endpoint(room_id: str, websocket: WebSocket, db: Session = D
             }
             json_message = json.dumps(message_data)
             print("========================")
+            print(json_message)
+            print("========================")
             # Broadcast to all except sender
             for connection in active_connections[room_id]:
                 if connection != websocket:
@@ -38,11 +42,11 @@ async def websocket_endpoint(room_id: str, websocket: WebSocket, db: Session = D
         active_connections[room_id].remove(websocket)
         if not active_connections[room_id]:
             del active_connections[room_id]
-    finally:
-        if websocket in active_connections[room_id]:
-            active_connections[room_id].remove(websocket)
-        if not active_connections[room_id]:
-            del active_connections[room_id]
+#     finally:
+#         if websocket in active_connections[room_id]:
+#             active_connections[room_id].remove(websocket)
+#         if not active_connections[room_id]:
+#             del active_connections[room_id]
 
 
 @app.post('/rooms')
