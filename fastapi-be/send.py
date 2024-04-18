@@ -6,15 +6,17 @@ import websockets
 from uuid import uuid4
 
 
-async def send_messages(uri):
-    async with websockets.connect(uri) as websocket:
-        while True:
-            message = input("Enter message (type 'exit' to quit): ")
-            if message.lower() == 'exit':
-                break
-            await websocket.send(message)
-#            response = await websocket.recv()
-#            print(f"Server says: {response}")
+async def send_message(uri, message):
+    # Customize ping interval and timeout
+    # ping_interval = 10  # seconds
+    # ping_timeout  = 10  # seconds
+
+    async with websockets.connect(
+        uri,
+      #   ping_interval=ping_interval,
+      #   ping_timeout=ping_timeout
+    ) as websocket:
+        await websocket.send(message)
 
 if __name__ == "__main__":
 
@@ -39,5 +41,9 @@ if __name__ == "__main__":
 # Send a Chat Message to this Room
     uri = f"ws://localhost:8000/messages/{roomid}"
     print(uri)
-    asyncio.run(send_messages(uri))
+    while True:
+        message = input("Enter message (type 'exit' to quit): ")
+        if message.lower() == 'exit':
+            break
+        asyncio.run(send_message(uri, message))
 
