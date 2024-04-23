@@ -16,10 +16,10 @@ if __name__ == "__main__":
     rooms  = rooms["rooms"]
 
 # Pick a random room for now
-    roomid = str(rooms[0]["name"])
+    roomid = str(rooms[0]["id"])
 
 # Receive a Chat Message from this Room
-    uri = "ws://localhost:8000/messages" + "/" + roomid
+    uri = f"ws://localhost:8000/messages/{roomid}"
     print(f"Listening to: {uri}")
     while True:
         asyncio.run(receive_messages(uri))

@@ -36,7 +36,7 @@ if __name__ == "__main__":
     rooms  = rooms["rooms"]
 
 # Pick a random room for now
-    roomid = str(rooms[0]["name"])
+    roomid = str(rooms[0]["id"])
 
 # Send a Chat Message to this Room
     uri = f"ws://localhost:8000/messages/{roomid}"

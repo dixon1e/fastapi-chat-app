@@ -50,12 +50,12 @@ async def websocket_endpoint(room_id: str, websocket: WebSocket, db: Session = D
 
 
 @app.post('/rooms')
-def create_room_handler(room: Room, db: Session = Depends(get_session)):
+def create_room(room: Room, db: Session = Depends(get_session)):
     db_room = crud.create_room(db, room)
     return {"message": f"Room Id: {db_room.name} is created"}
 
 @app.get("/rooms/{room_id}")
-def get_room_handler(room_id: str, db: Session = Depends(get_session)):
+def get_room(room_id: str, db: Session = Depends(get_session)):
     room = crud.get_room(db, room_id)
     if room:
         return {"id": room.id, "name": room.name}
