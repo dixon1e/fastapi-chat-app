@@ -22,3 +22,5 @@ python recv.py
 . ./venv/bin/activate
 python send.py
 ```
+
+In Terminal 3, you can type text and hit <enter>. Both Terminal 1 and Terminal 2 should show the text flow through.
