@@ -2,13 +2,15 @@ from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
 from sqlmodel import SQLModel, Field, create_engine, Session
 
+DBNAME = "rooms"
+
 def create_database_if_not_exists(url):
     if not database_exists(url):
         create_database(url)
     print("Database exists or was created!")
 
 # Define the database URL
-POSTGRES_DATABASE_URL = "postgresql://postgres:postgres@db/dcentric-test-DB"
+POSTGRES_DATABASE_URL = f"postgresql://postgres:postgres@db/{DBNAME}"
 
 # Check and create database if necessary
 create_database_if_not_exists(POSTGRES_DATABASE_URL)
@@ -28,4 +30,3 @@ SQLModel.metadata.create_all(bind=engine)
 def get_session():
     with Session(engine) as session:
         yield session
-

@@ -10,7 +10,7 @@ def create_room(db: Session, room: models.Room):
     return db_room
 
 def get_room(db: Session, room_id: str):
-    statement = select(RoomDB).where(RoomDB.name == room_id)
+    statement = select(RoomDB).where(RoomDB.id == room_id)
     result = db.exec(statement)
     return result.first()
 
