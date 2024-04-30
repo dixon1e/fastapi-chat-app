@@ -32,7 +32,11 @@ def get_rooms(db: Session):
     return result.fetchall()
 
 def delete_room(db: Session, room_id: str):
-    statement = delete(RoomDB).where(RoomDB.name == room_id)
+    statement = select(RoomDB).where(RoomDB.id == room_id)
     result = db.exec(statement)
-    return result
+    target = result.one()
+    data = {"id":target.id,"name":target.name}
+    db.delete(target)
+    db.commit()
+    return data
 
