@@ -2,8 +2,10 @@ from fastapi import FastAPI, WebSocket, Depends, HTTPException
 from starlette.websockets import WebSocketDisconnect 
 from sqlmodel import Session
 from database import get_session, RoomDB
-from models import Room  # Ensure models.Room is properly defined to match RoomDB fields
+from models import Room, Message
 from typing import Dict, List
+from datetime import datetime, timezone
+import pprint
 import crud
 import json
 
@@ -25,19 +27,22 @@ async def websocket_endpoint(room_id: str, websocket: WebSocket, db: Session = D
     try:
         await websocket.accept()
         while True:
-            message = await websocket.receive_text()
+            now_utc = datetime.now(timezone.utc)
+            message_json = await websocket.receive_text()
+            message_dict = json.loads(message_json)
             message_data = {
                 "room_id": room_id,
-                "message": message,
+                "user_id": message_dict["user_id"],
+                "message": message_dict["message"],
+                "rcvd_at": now_utc.isoformat()
             }
-            json_message = json.dumps(message_data)
             print("========================")
-            print(json_message)
+            pprint.pp(message_data)
             print("========================")
             # Broadcast to all except sender
             for connection in active_connections[room_id]:
                 if connection != websocket:
-                    await connection.send_text(json_message)
+                    await connection.send_text(json.dumps(message_data))
     except WebSocketDisconnect:
         active_connections[room_id].remove(websocket)
         if not active_connections[room_id]:
@@ -57,6 +62,13 @@ def create_room(room: Room, db: Session = Depends(get_session)):
 @app.get("/rooms/{room_id}")
 def get_room(room_id: str, db: Session = Depends(get_session)):
     room = crud.get_room(db, room_id)
+    if room:
+        return {"id": room.id, "name": room.name}
+    raise HTTPException(status_code=404, detail="Room not found")
+
+@app.get("/rooms/{room_id}/messages")
+def get_room(room_id: str, db: Session = Depends(get_session)):
+    room = crud.get_room_messages(db, room_id)
     if room:
         return {"id": room.id, "name": room.name}
     raise HTTPException(status_code=404, detail="Room not found")

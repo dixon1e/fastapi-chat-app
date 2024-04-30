@@ -8,6 +8,7 @@ async def receive_messages(uri):
         while True:
             message = await websocket.recv()
             print("Received:", message)
+            print("=========")
 
 if __name__ == "__main__":
 # Get a list of the rooms

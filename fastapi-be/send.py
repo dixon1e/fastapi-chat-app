@@ -5,6 +5,7 @@ import asyncio
 import websockets
 from uuid import uuid4
 
+user_id = str(uuid4())
 
 async def send_message(uri, message):
     # Customize ping interval and timeout
@@ -45,5 +46,7 @@ if __name__ == "__main__":
         message = input("Enter message (type 'exit' to quit): ")
         if message.lower() == 'exit':
             break
-        asyncio.run(send_message(uri, message))
+        message_json = {"user_id":user_id, "message":message}
+        message_text = json.dumps(message_json)
+        asyncio.run(send_message(uri, message_text))
 
